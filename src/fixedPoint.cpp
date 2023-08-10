@@ -1,62 +1,60 @@
 #include "./doctest/doctest.hpp"
+#include "fixedPoint.hpp"
 
-#include <stdint.h>
-	
-// Assumes dev system and target system are both little endian
+Fixed16_16::Fixed16_16(int16_t whole_only)
+{
+	Value = whole_only << 16;
+}
 
-class Fixed16_16 {
-public:
-	int32_t Value;
-	Fixed16_16(int16_t whole_only)
-	{
-		Value = whole_only << 16;
-	}
-	Fixed16_16(int32_t whole_only)
-	{
-		Value = whole_only << 16;
-	}
-	Fixed16_16(float f)
-	{
-		Value = (int32_t)(f * 0x10000);
-	}
-	Fixed16_16(double f)
-	{
-		Value = (int32_t)(f * 0x10000);
-	}
-	Fixed16_16(int16_t whole, uint16_t fraction)
-	{
-		Value = whole << 16 | fraction;
-	}
+Fixed16_16::Fixed16_16(int32_t whole_only)
+{
+	Value = whole_only << 16;
+}
 
-	int16_t Truncate() {
-		return Value / 0x10000;
-	}
+Fixed16_16::Fixed16_16(float f)
+{
+	Value = (int32_t)(f * 0x10000);
+}
 
-	int16_t Round() {
-		int32_t temp = Value + ((Value & 0x80000000) ? 0xffff8000 : 0x8000);
-		return temp / 0x10000;
-	}
+Fixed16_16::Fixed16_16(double f)
+{
+	Value = (int32_t)(f * 0x10000);
+}
 
-	friend Fixed16_16 operator+(Fixed16_16 lhs,const Fixed16_16& rhs)
-	{
-		lhs.Value += rhs.Value;
-		return lhs;
-	}
+Fixed16_16::Fixed16_16(int16_t whole, uint16_t fraction)
+{
+	Value = whole << 16 | fraction;
+}
 
-	friend Fixed16_16 operator-(Fixed16_16 lhs,const Fixed16_16& rhs)
-	{
-		lhs.Value -= rhs.Value;
-		return lhs;
-	}
+int16_t Fixed16_16::Truncate() {
+	return Value / 0x10000;
+}
 
-	friend Fixed16_16 operator*(Fixed16_16 lhs, const Fixed16_16& rhs)
-	{
-		lhs.Value = (int32_t)((int64_t)lhs.Value * (int64_t)rhs.Value >> 16);
-		return lhs;
-	}
-};
+int16_t Fixed16_16::Round() {
+	int32_t temp = Value + ((Value & 0x80000000) ? 0xffff8000 : 0x8000);
+	return temp / 0x10000;
+}
 
-TEST_CASE("Fixed16_16"){
+Fixed16_16 operator+(Fixed16_16 lhs, const Fixed16_16& rhs)
+{
+	lhs.Value += rhs.Value;
+	return lhs;
+}
+
+Fixed16_16 operator-(Fixed16_16 lhs, const Fixed16_16& rhs)
+{
+	lhs.Value -= rhs.Value;
+	return lhs;
+}
+
+Fixed16_16 operator*(Fixed16_16 lhs, const Fixed16_16& rhs)
+{
+	lhs.Value = (int32_t)((int64_t)lhs.Value * (int64_t)rhs.Value >> 16);
+	return lhs;
+}
+
+
+TEST_CASE("Fixed16_16") {
 	// CTORS
 	CHECK(Fixed16_16(1).Value == 0x00010000);
 	CHECK(Fixed16_16(5, 0x8000).Value == 0x00058000);
@@ -76,13 +74,13 @@ TEST_CASE("Fixed16_16"){
 	CHECK((Fixed16_16(1.5) * Fixed16_16(1.5)).Value == 0x00024000);
 	CHECK((Fixed16_16(32767) * Fixed16_16(0.5)).Value == 0x3fff8000);
 	CHECK((Fixed16_16(-0.5) * Fixed16_16(10)).Round() == (int32_t)-5);
-	
+
 	// Truncate
 	CHECK(Fixed16_16(75.36).Truncate() == (int16_t)75);
 	CHECK(Fixed16_16(7.5).Truncate() == (int16_t)7);
 	CHECK(Fixed16_16(-9.5).Truncate() == (int16_t)-9);
 	CHECK(Fixed16_16(-5.2).Truncate() == (int16_t)-5);
-	
+
 	// Round
 	CHECK(Fixed16_16(75.36).Round() == (int16_t)75);
 	CHECK(Fixed16_16(123).Round() == (int16_t)123);
