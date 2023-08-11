@@ -1,15 +1,15 @@
 .PHONY: all
-all: bin/inc/vcsLib.h bin/lib/libFixedPoint.a bin/lib/libBoundingBox.a
+all: bin/inc/vcsLib.h bin/lib/libFP32.a bin/lib/libBoundingBox.a
 
 bin/inc/vcsLib.h: inc/vcsLib.h | bin/inc
 	cp -f inc/vcsLib.h bin/inc/vcsLib.h
 
-bin/test/testFixedPoint: inc/doctest/*.* ./inc/fixedPoint.hpp bin/obj/doctest.o src/fixedPoint.cpp | bin/test
-	g++ ./bin/obj/doctest.o src/fixedPoint.cpp -obin/test/testFixedPoint -Wall -lgcc -I./inc
-bin/lib/libFixedPoint.a: inc/doctest/*.* ./inc/fixedPoint.hpp bin/test/testFixedPoint src/fixedPoint.cpp | bin/inc bin/lib bin/test
-	./bin/test/testFixedPoint
-	cp -f inc/fixedPoint.hpp bin/inc/fixedPoint.hpp
-	arm-none-eabi-g++ -r -mlong-calls -fno-exceptions -march=armv6-m src/fixedPoint.cpp -obin/lib/libFixedPoint.a -O3 -Wall -Wno-unused-function -I./inc
+bin/test/testFP32: inc/doctest/*.* ./inc/fp32.hpp bin/obj/doctest.o src/fp32.cpp | bin/test
+	g++ ./bin/obj/doctest.o src/fp32.cpp -obin/test/testFP32 -Wall -lgcc -I./inc
+bin/lib/libFP32.a: inc/doctest/*.* ./inc/fp32.hpp bin/test/testFP32 src/fp32.cpp | bin/inc bin/lib bin/test
+	./bin/test/testFP32
+	cp -f inc/fp32.hpp bin/inc/fp32.hpp
+	arm-none-eabi-g++ -r -mlong-calls -fno-exceptions -march=armv6-m src/fp32.cpp -obin/lib/libFP32.a -O3 -Wall -Wno-unused-function -I./inc
 
 bin/test/testBoundingBox: inc/doctest/*.* ./inc/boundingBox.hpp bin/obj/doctest.o src/boundingBox.cpp | bin/test
 	g++ ./bin/obj/doctest.o src/boundingBox.cpp -obin/test/testBoundingBox -Wall -lgcc -I./inc
