@@ -1,6 +1,10 @@
 .PHONY: all
 all: bin/inc/vcsLib.h bin/lib/libFP32.a bin/lib/libBoundingBox.a
 
+.PHONY: clean
+clean:
+	rm bin -rf
+
 bin/inc/vcsLib.h: inc/vcsLib.h | bin/inc
 	cp -f inc/vcsLib.h bin/inc/vcsLib.h
 

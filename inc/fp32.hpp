@@ -14,6 +14,18 @@ public:
 	int16_t Truncate();
 	int16_t Round();
 
+	friend bool operator==(FP32 lhs, const FP32& rhs);
+
+	friend bool operator!=(FP32 lhs, const FP32& rhs);
+
+	friend bool operator>=(FP32 lhs, const FP32& rhs);
+
+	friend bool operator>(FP32 lhs, const FP32& rhs);
+
+	friend bool operator<=(FP32 lhs, const FP32& rhs);
+
+	friend bool operator<(FP32 lhs, const FP32& rhs);
+
 	friend FP32 operator+(FP32 lhs, const FP32& rhs);
 
 	friend FP32 operator-(FP32 lhs, const FP32& rhs);

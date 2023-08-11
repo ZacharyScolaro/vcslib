@@ -35,6 +35,36 @@ int16_t FP32::Round() {
 	return temp / 0x10000;
 }
 
+bool operator==(FP32 lhs, const FP32& rhs)
+{
+	return lhs.Value == rhs.Value;
+}
+
+bool operator!=(FP32 lhs, const FP32& rhs)
+{
+	return lhs.Value != rhs.Value;
+}
+
+bool operator>=(FP32 lhs, const FP32& rhs)
+{
+	return lhs.Value >= rhs.Value;
+}
+
+bool operator>(FP32 lhs, const FP32& rhs)
+{
+	return lhs.Value > rhs.Value;
+}
+
+bool operator<=(FP32 lhs, const FP32& rhs)
+{
+	return lhs.Value <= rhs.Value;
+}
+
+bool operator<(FP32 lhs, const FP32& rhs)
+{
+	return lhs.Value < rhs.Value;
+}
+
 FP32 operator+(FP32 lhs, const FP32& rhs)
 {
 	lhs.Value += rhs.Value;
@@ -61,6 +91,57 @@ TEST_CASE("FP32") {
 	CHECK(FP32(9.25f).Value == 0x00094000);
 	CHECK(FP32(9.25).Value == 0x00094000);
 	CHECK(FP32(-3.5).Value == (int32_t)0xfffc8000);
+
+	// == Comparisons
+	CHECK((FP32(3) == FP32(5)) == false);
+	CHECK((FP32(7) == FP32(7)) == true);
+	CHECK((FP32(11.19) == FP32(11.19)) == true);
+	CHECK((FP32(-11.19) == FP32(11.19)) == false);
+
+	// == Comparisons
+	CHECK((FP32(3) != FP32(5)) == true);
+	CHECK((FP32(7) != FP32(7)) == false);
+	CHECK((FP32(11.19) != FP32(11.19)) == false);
+	CHECK((FP32(-11.19) != FP32(11.19)) == true);
+
+	// >= Comparisons
+	CHECK((FP32(3) >= FP32(5)) == false);
+	CHECK((FP32(7) >= FP32(7)) == true);
+	CHECK((FP32(9) >= FP32(7)) == true);
+	CHECK((FP32(11.18) >= FP32(11.19)) == false);
+	CHECK((FP32(11.19) >= FP32(11.19)) == true);
+	CHECK((FP32(11.191) >= FP32(11.19)) == true);
+	CHECK((FP32(-11.19) >= FP32(11.19)) == false);
+
+	// > Comparisons
+	CHECK((FP32(3) > FP32(5)) == false);
+	CHECK((FP32(7) > FP32(7)) == false);
+	CHECK((FP32(9) > FP32(7)) == true);
+	CHECK((FP32(11.18) > FP32(11.19)) == false);
+	CHECK((FP32(11.19) > FP32(11.19)) == false);
+	CHECK((FP32(11.191) > FP32(11.19)) == true);
+	CHECK((FP32(-11.19) > FP32(11.19)) == false);
+	CHECK((FP32(1.7) > FP32(-1.7)) == true);
+
+	// <= Comparisons
+	CHECK((FP32(3) <= FP32(5)) == true);
+	CHECK((FP32(7) <= FP32(7)) == true);
+	CHECK((FP32(9) <= FP32(7)) == false);
+	CHECK((FP32(11.18) <= FP32(11.19)) == true);
+	CHECK((FP32(11.19) <= FP32(11.19)) == true);
+	CHECK((FP32(11.191) <= FP32(11.19)) == false);
+	CHECK((FP32(-11.19) <= FP32(11.19)) == true);
+	CHECK((FP32(1.7) <= FP32(-1.7)) == false);
+
+	// < Comparisons
+	CHECK((FP32(3) < FP32(5)) == true);
+	CHECK((FP32(7) < FP32(7)) == false);
+	CHECK((FP32(9) < FP32(7)) == false);
+	CHECK((FP32(11.18) < FP32(11.19)) == true);
+	CHECK((FP32(11.19) < FP32(11.19)) == false);
+	CHECK((FP32(11.191) < FP32(11.19)) == false);
+	CHECK((FP32(-11.19) < FP32(11.19)) == true);
+	CHECK((FP32(1.7) < FP32(-1.7)) == false);
 
 	// Addition
 	CHECK((FP32(3) + FP32(5)).Value == 0x00080000);
