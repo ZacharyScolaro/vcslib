@@ -56,17 +56,68 @@ FP32 operator+(FP32 lhs, const FP32& rhs)
 	return lhs;
 }
 
+// fp32++
+FP32 FP32::operator++(int)
+{
+	FP32 old = 0;
+	old.Value = this->Value;
+	this->Value = (*this + 1).Value;
+	return old;
+}
+
+FP32 FP32::operator+=(const FP32& rhs)
+{
+	*this = *this + rhs;
+	return *this;
+}
+
 FP32 operator-(FP32 lhs, const FP32& rhs)
 {
 	lhs.Value -= rhs.Value;
 	return lhs;
 }
 
+// fp32--
+FP32 FP32::operator--(int)
+{
+	FP32 old = 0;
+	old.Value = this->Value;
+	this->Value = (*this - 1).Value;
+	return old;
+}
+
+FP32 FP32::operator-=(const FP32& rhs)
+{
+	*this = *this - rhs;
+	return *this;
+}
+
 FP32 operator*(FP32 lhs, const FP32& rhs)
 {
-	lhs.Value = (int32_t)((int64_t)lhs.Value * (int64_t)rhs.Value >> 16);
+	lhs.Value = (int32_t)(((int64_t)lhs.Value * (int64_t)rhs.Value) / 0x10000);
 	return lhs;
 }
+
+FP32 operator/(FP32 lhs, const FP32& rhs)
+{
+	if (rhs.Value != 0)
+	{
+		if (lhs.Value < 0)
+		{
+			lhs.Value = ((lhs.Value / rhs.Value) * 0x10000) + (((lhs.Value % rhs.Value) * 0x10000) / rhs.Value);
+		}
+		else
+		{
+			lhs.Value = ((lhs.Value / rhs.Value) * 0x10000) - (((lhs.Value % rhs.Value) * 0x10000) / rhs.Value);
+		}
+	}
+	else
+	{
+		lhs.Value = (lhs.Value < 0) ? 0x80000000 : 0x7fffffff;
+	}
+	return lhs;
+}
+
 
 // Skip tests in bare metal ARM builds
 #ifndef __ARM_EABI__
@@ -136,10 +187,24 @@ TEST_CASE("FP32") {
 
 	// Addition
 	CHECK((fp32(3) + fp32(5)).Value == 0x00080000);
+	FP32 a = fp32(7.25);
+	a++;
+	CHECK(a.Value == fp32(8.25).Value);
+	a+= fp32(2.75);
+	CHECK(a.Value == fp32(11).Value);
+	a+= 5;
+	CHECK(a.Value == fp32(16).Value);
 
 	// Subtraction
 	CHECK((fp32(11) - fp32(7)).Value == 0x00040000);
 	CHECK((fp32(7) - fp32(11)).Value == 0xfffc0000);
+	a = fp32(7.25);
+	a--;
+	CHECK(a.Value == fp32(6.25).Value);
+	a -= fp32(2.75);
+	CHECK(a.Value == fp32(3.5).Value);
+	a -= 2;
+	CHECK(a.Value == fp32(1.5).Value);
 
 	// Multiplication
 	CHECK((fp32(13) * fp32(3)).Value == 0x00270000);
@@ -147,13 +212,32 @@ TEST_CASE("FP32") {
 	CHECK((fp32(32767) * fp32(0.5)).Value == 0x3fff8000);
 	CHECK((fp32(-0.5) * fp32(10)).Round() == (int32_t)-5);
 
+	// Division
+	CHECK((fp32(12.0) / 3).Value == 0x00040000);
+	CHECK((fp32(-12.0) / 3).Value == fp32(-4).Value);
+	CHECK((fp32(1.5) / fp32(1.5)).Value == 0x00010000);
+	CHECK((fp32(-1.5) / fp32(-1.5)).Value == 0x00010000);
+	CHECK((fp32(7) / fp32(0.5)) == 14);
+	CHECK((fp32(-7) / fp32(0.5)) == -14);
+	CHECK((fp32(7) / fp32(-0.5)) == -14);
+	CHECK((fp32(0.5) / fp32(10)).Value == fp32(0.05).Value);
+	CHECK((fp32(-0.5) / fp32(10)).Value == fp32(-0.05).Value);
+	CHECK((fp32(0.5) / fp32(-10)).Value == fp32(-0.05).Value);
+	CHECK((fp32(-0.5) / fp32(-10)).Value == fp32(0.05).Value);
+	////// Division by 0 returns int.max or int.min depending on numerator sign
+	CHECK((fp32(7) / fp32(0)).Value == 0x7fffffff);
+	CHECK((fp32(-7) / fp32(0)).Value == 0x80000000);
+	
+
 	// Truncate
+	CHECK(fp32(0).Truncate() == (int16_t)0);
 	CHECK(fp32(75.36).Truncate() == (int16_t)75);
 	CHECK(fp32(7.5).Truncate() == (int16_t)7);
 	CHECK(fp32(-9.5).Truncate() == (int16_t)-9);
 	CHECK(fp32(-5.2).Truncate() == (int16_t)-5);
 
 	// Round
+	CHECK(fp32(0).Round() == (int16_t)0);
 	CHECK(fp32(75.36).Round() == (int16_t)75);
 	CHECK(fp32(123).Round() == (int16_t)123);
 	CHECK(fp32(56.5).Round() == (int16_t)57);

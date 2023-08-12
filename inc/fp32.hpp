@@ -30,7 +30,17 @@ public:
 
 	friend FP32 operator+(FP32 lhs, const FP32& rhs);
 
+	FP32 operator++(int);
+
+	FP32 operator+=(const FP32& rhs);
+
 	friend FP32 operator-(FP32 lhs, const FP32& rhs);
 
+	FP32 operator--(int);
+
+	FP32 operator-=(const FP32& rhs);
+
 	friend FP32 operator*(FP32 lhs, const FP32& rhs);
+
+	friend FP32 operator/(FP32 lhs, const FP32& rhs);
 };
