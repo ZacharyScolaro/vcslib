@@ -2,14 +2,16 @@
 
 // Assumes dev system and target system are both little endian
 
+// Must use this macro for decimals because any reference to float will pull in the soft-float library
+// This will be slow on the non FPU arm chips
+#define fp32(x) FP32((int32_t)(x*0x10000), true)
+
 class FP32 {
 public:
 	int32_t Value;
-	FP32(int16_t whole_only);
-	FP32(int32_t whole_only);
-	FP32(float f);
-	FP32(double f);
-	FP32(int16_t whole, uint16_t fraction);
+	template<typename T> void fn(T) = delete; // #2
+	FP32(int32_t value);
+	FP32(int32_t value, bool fromMacro);
 
 	int16_t Truncate();
 	int16_t Round();

@@ -1,24 +1,6 @@
 #include "./doctest/doctest.hpp"
 #include "boundingBox.hpp"
 
-template <typename T> BoundingBox<T>::BoundingBox(T x, T y, T left, T right, T top, T bottom) :
-	left(left),
-	right(right),
-	top(top),
-	bottom(bottom),
-	X(x),
-	Y(y)
-{
-}
-
-template <typename T> bool BoundingBox<T>::Intersects(const BoundingBox& bb) {
-	return !((X + right) <= (bb.X + bb.left)
-		|| (X + left) >= (bb.X + bb.right)
-		|| (Y + top) >= (bb.Y + bb.bottom)
-		|| (Y + bottom) <= (bb.Y + bb.top)
-		);
-}
-
 TEST_CASE("BoundingBox") {
 	CHECK(BoundingBox<int>(10, 0, 0, 5, 0, 5).Intersects(BoundingBox<int>(5, 0, 0, 5, 0, 5)) == false); // right of BB
 	CHECK(BoundingBox<int>(10, 0, 0, 5, 0, 5).Intersects(BoundingBox<int>(15, 0, 0, 5, 0, 5)) == false); // left of BB
