@@ -11,6 +11,11 @@ FP32::FP32(int32_t value, bool fromMacro)
 	Value = fromMacro ? value : (int32_t)(value * 0x10000);
 }
 
+FP32::operator int const()
+{
+	return this->Round();
+}
+
 int16_t FP32::Truncate() {
 	return Value / 0x10000;
 }
@@ -249,5 +254,20 @@ TEST_CASE("FP32") {
 	CHECK(fp32(-99.4999).Round() == (int16_t)-99);
 	CHECK(fp32(-88.999).Round() == (int16_t)-89);
 	CHECK(fp32(-0.5).Round() == (int16_t)-1);
+
+	// Rounding when cast to int
+	CHECK((int)fp32(0) == (int16_t)0);
+	CHECK((int)fp32(75.36) == 75);
+	CHECK((int)fp32(123) == (int16_t)123);
+	CHECK((int)fp32(56.5) == (int16_t)57);
+	CHECK((int)fp32(99.4999) == (int16_t)99);
+	CHECK((int)fp32(88.999) == (int16_t)89);
+	CHECK((int)fp32(-75.36) == (int16_t)-75);
+	CHECK((int)fp32(-123) == (int16_t)-123);
+	CHECK((int)fp32(-56.5) == (int16_t)-57);
+	CHECK((int)fp32(-99.4999) == (int16_t)-99);
+	CHECK((int)fp32(-88.999) == (int16_t)-89);
+	CHECK((int)fp32(-0.5) == (int16_t)-1);
+
 }
 #endif

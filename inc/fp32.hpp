@@ -13,6 +13,8 @@ public:
 	FP32(int32_t value);
 	FP32(int32_t value, bool fromMacro);
 
+	explicit operator int const();
+
 	int16_t Truncate();
 	int16_t Round();
 
