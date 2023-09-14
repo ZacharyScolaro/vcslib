@@ -1,3 +1,6 @@
+#ifndef FP32_HPP
+#define FP32_HPP
+
 #include <stdint.h>
 
 // Assumes dev system and target system are both little endian
@@ -46,3 +49,5 @@ public:
 
 	friend FP32 operator/(FP32 lhs, const FP32& rhs);
 };
+
+#endif // FP32_HPP
