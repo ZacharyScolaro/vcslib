@@ -18,8 +18,8 @@ public:
 
 	explicit operator int const();
 
-	int16_t Truncate();
-	int16_t Round();
+	int16_t Truncate() const;
+	int16_t Round() const;
 
 	friend bool operator==(FP32 lhs, const FP32& rhs);
 
@@ -48,6 +48,8 @@ public:
 	friend FP32 operator*(FP32 lhs, const FP32& rhs);
 
 	friend FP32 operator/(FP32 lhs, const FP32& rhs);
+
+	friend FP32 operator%(FP32 lhs, const FP32& rhs);
 };
 
 #endif // FP32_HPP

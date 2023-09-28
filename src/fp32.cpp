@@ -16,11 +16,11 @@ FP32::operator int const()
 	return this->Round();
 }
 
-int16_t FP32::Truncate() {
+int16_t FP32::Truncate() const {
 	return Value / 0x10000;
 }
 
-int16_t FP32::Round() {
+int16_t FP32::Round() const {
 	int32_t temp = Value + ((Value & 0x80000000) ? 0xffff8000 : 0x8000);
 	return temp / 0x10000;
 }
@@ -123,9 +123,24 @@ FP32 operator/(FP32 lhs, const FP32& rhs)
 	return lhs;
 }
 
+FP32 operator%(FP32 lhs, const FP32& rhs)
+{
+	if (rhs.Value != 0)
+	{
+		lhs.Value = (lhs.Value % rhs.Value);
+	}
+	else
+	{
+		// TODO crash screen?
+	}
+	return lhs;
+}
+
 
 // Skip tests in bare metal ARM builds
 #ifndef __ARM_EABI__
+
+extern int ARMOFF;
 
 TEST_CASE("FP32 implicit constructor") {
 	FP32 a = 5;
@@ -233,6 +248,12 @@ TEST_CASE("FP32") {
 	CHECK((fp32(7) / fp32(0)).Value == 0x7fffffff);
 	CHECK((fp32(-7) / fp32(0)).Value == 0x80000000);
 	
+	//Modulus
+	CHECK((fp32(12.0) % 3).Value == 0);
+	CHECK((fp32(-12.0) % 3).Value == 0);
+	CHECK((fp32(-12.0) % -3).Value == 0);
+	CHECK((fp32(4.5) % fp32(1.5)).Value == 0);
+	CHECK((fp32(4.7) % fp32(1.5)) == fp32(0.2));
 
 	// Truncate
 	CHECK(fp32(0).Truncate() == (int16_t)0);

@@ -16,7 +16,7 @@ bin/test/testFP32: inc/doctest/*.* ./inc/fp32.hpp bin/obj/doctest.o src/fp32.cpp
 bin/lib/libFP32.a: inc/doctest/*.* ./inc/fp32.hpp bin/test/testFP32 src/fp32.cpp | bin/inc bin/lib bin/test
 	./bin/test/testFP32
 	cp -f inc/fp32.hpp bin/inc/fp32.hpp
-	arm-none-eabi-g++ -r -mlong-calls -fno-exceptions -march=armv6-m src/fp32.cpp -obin/lib/libFP32.a -O3 -Wall -Wno-unused-function -I./inc
+	arm-none-eabi-g++ -r -mlong-calls -fno-exceptions -march=armv6-m src/fp32.cpp -obin/lib/libFP32.a -O3 -Wall -Wno-unused-function -I./inc -lgcc
 	arm-none-eabi-strip bin/lib/libFP32.a -g
 
 bin/test/testBoundingBox: inc/doctest/*.* ./inc/boundingBox.hpp bin/obj/doctest.o src/boundingBox.cpp | bin/test
